@@ -18,9 +18,10 @@ function createMarkers(response) {
       let mag = feature.properties.mag;
       let depth = feature.geometry.coordinates[2];
       return new L.circle(coordinates, {
-        fillOpacity: 0.5,
+        fillOpacity: 0.3,
         color: "black",
         weight: 1,
+        opacity: 0.5,
         fillColor: defColor(depth, response),
         radius: feature.properties.mag * 15000
       });

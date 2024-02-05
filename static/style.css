@@ -13,14 +13,14 @@ html {
 padding: 10px 10px;
 font: 14px/16px;
 background: white;
-background: rgba(255,255,255,0.8);
+background: rgba(255,255,255,0.75);
 border-radius: 5px;
 }
 
 .legend {
 background-color: “black”;
 line-height: 22px;
-color: #555;
+color: #2e2e2e;
 width: auto;
 }
 
