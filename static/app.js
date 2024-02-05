@@ -12,22 +12,34 @@ let myMap = L.map("map", {
 let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
-let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-});
 
+// fn for defining color based on depth of quake
+function getColor(depth) {
+  if (depth < 10) return '#2F4D2A';
+  else if (depth < 30) return '#616D3D';
+  else if (depth < 50) return '#F7A400';
+  else if (depth < 70) return "#F38701";
+  else if (depth < 90) return '#F37410';
+  else return 'RED';
+}
 
-// data wranglings
+// Fetch and plot data
 d3.json(url).then(function (data) {
     console.log("=== Data successfully fetched! ===")
     console.log(data);
+    
+
+
 
     // make choropleth layer
     let earthquakes = L.geoJSON(data, {
         pointToLayer: function(feature,coordinates) {
-            let marker = L.circleMarker(coordinates, {
+          
+          console.log(coordinates.alt);
+          
+          let marker = L.circleMarker(coordinates, {
                 radius: feature.properties.mag * 10,
-                fillColor: null,
+                fillColor: getColor(coordinates.alt),
                 color: "#000",
                 weight: 1,
                 opacity: 1,
@@ -39,21 +51,17 @@ d3.json(url).then(function (data) {
         }
     });
 
-    console.log(earthquakes)
-
     let baseMaps = {
         Street: street,
-        Topography: topo
       };
       
       let overlayMaps = {
         Earthquakes: earthquakes,
       };
       
-      L.control.layers(baseMaps, overlayMaps,{collapsed: false}).addTo(myMap);
+      // L.control.layers(baseMaps, overlayMaps,{collapsed: false}).addTo(myMap);
 
-
-
+// draw legend
 var legend = L.control({
     position: "bottomright"
   });
@@ -62,8 +70,6 @@ var legend = L.control({
   legend.onAdd = function() {
     var div = L.DomUtil.create("div", "info legend"),
     depth = [-10, 10, 30, 50, 70, 90];
-  
-    div.innerHTML += "<h3 style='text-align: center'>Depth</h3>"
   
     for (var i = 0; i < depth.length; i++) {
       div.innerHTML +=
